@@ -3,7 +3,7 @@ import { useAppSelector } from "../../store/hooks";
 import { PlayerCard } from "../PlayerCard/PlayerCard";
 
 export const PlayerList: React.FC = () => {
-  const players = useAppSelector((state) => state.player.playerList);
+  const players = useAppSelector((state) => state.draft.availablePlayers);
 
   const headers = [
     "GP",

@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import playerReducer from "./playerSlice";
+import draftReducer from "./draftSlice";
 
 export const store = configureStore({
   reducer: {
-    player: playerReducer,
+    draft: draftReducer,
   },
 });
 

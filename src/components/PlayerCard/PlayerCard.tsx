@@ -1,12 +1,15 @@
 import React from "react";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
+import { useAppDispatch } from "../../store/hooks";
+import { draftPlayer, markUnavailable } from "../../store/draftSlice";
 
 interface PlayerCardProps {
   player: Player;
 }
 
 export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
+  const dispatch = useAppDispatch();
   const stats = player.statsPrediction;
 
   // Calculate missing stats
@@ -91,10 +94,16 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
 
       {/* Action */}
       <div className="tw:ml-auto tw:pl-4 tw:flex tw:items-center tw:gap-2">
-        <button className="tw:border-2 tw:text-slate-400 tw:hover:text-red-500 tw:transition-colors tw:cursor-pointer tw:p-1 tw:rounded-full tw:hover:bg-red-50 tw:flex tw:items-center tw:justify-center">
+        <button 
+          className="tw:border-2 tw:text-slate-400 tw:hover:text-red-500 tw:transition-colors tw:cursor-pointer tw:p-1 tw:rounded-full tw:hover:bg-red-50 tw:flex tw:items-center tw:justify-center"
+          onClick={() => dispatch(markUnavailable(player.id))}
+        >
           <Icon name="Close" size={20} />
         </button>
-        <button className="tw:border-2 tw:border-orange-400 tw:text-orange-500 tw:font-bold tw:px-6 tw:py-1 tw:rounded-full tw:hover:bg-orange-50 tw:transition-colors tw:cursor-pointer">
+        <button 
+          className="tw:border-2 tw:border-orange-400 tw:text-orange-500 tw:font-bold tw:px-6 tw:py-1 tw:rounded-full tw:hover:bg-orange-50 tw:transition-colors tw:cursor-pointer"
+          onClick={() => dispatch(draftPlayer(player.id))}
+        >
           Draft
         </button>
       </div>

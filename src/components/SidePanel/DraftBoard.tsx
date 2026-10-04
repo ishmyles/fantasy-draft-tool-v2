@@ -5,11 +5,8 @@ import { Icon } from "../Icon/Icon";
 
 export const DraftBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"roster" | "history">("roster");
-  const players = useAppSelector((state) => state.player.playerList);
-
-  // Mock: first 10 players as drafted roster / pick history
-  const mockRoster = players.slice(0, 10);
-  const mockHistory = players.slice(0, 10);
+  const myRoster = useAppSelector((state) => state.draft.myRoster);
+  const pickHistory = useAppSelector((state) => state.draft.pickHistory);
 
   return (
     <div className="tw:flex tw:flex-col tw:h-full tw:w-full tw:min-w-0">
@@ -49,9 +46,9 @@ export const DraftBoard: React.FC = () => {
 
       {/* Content */}
       {activeTab === "roster" ? (
-        <RosterView players={mockRoster} />
+        <RosterView players={myRoster} />
       ) : (
-        <HistoryView players={mockHistory} />
+        <HistoryView players={pickHistory} />
       )}
     </div>
   );
