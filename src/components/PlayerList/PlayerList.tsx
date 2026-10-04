@@ -42,7 +42,7 @@ export const PlayerList: React.FC = () => {
   ];
 
   return (
-    <div className="tw:flex tw:flex-col tw:h-full tw:bg-slate-50 tw:p-4">
+    <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:bg-slate-50 tw:p-4">
       <div className="tw:overflow-x-auto tw:flex-1 tw:min-h-0 tw:flex tw:flex-col">
         {/* Header Row */}
         <div className="tw:flex tw:items-center tw:px-4 tw:py-3 tw:text-xs tw:font-bold tw:text-slate-400 tw:uppercase tw:mb-2 tw:min-w-max">
