@@ -38,11 +38,11 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
             alt={player.name}
           />
         </div>
-        <div className="tw:flex tw:flex-col">
+        <div className="tw:flex tw:flex-col tw:text-start">
           <div className="tw:font-bold tw:text-slate-800 tw:truncate">
             {player.name}
           </div>
-          <div className="tw:text-xs tw:text-slate-500 tw:text-start">
+          <div className="tw:text-xs tw:text-slate-500">
             {player.team} • {player.position.join(", ")}
           </div>
         </div>
@@ -94,13 +94,13 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
 
       {/* Action */}
       <div className="tw:ml-auto tw:pl-4 tw:flex tw:items-center tw:gap-2">
-        <button 
+        <button
           className="tw:border-2 tw:text-slate-400 tw:hover:text-red-500 tw:transition-colors tw:cursor-pointer tw:p-1 tw:rounded-full tw:hover:bg-red-50 tw:flex tw:items-center tw:justify-center"
           onClick={() => dispatch(markUnavailable(player.id))}
         >
           <Icon name="Close" size={20} />
         </button>
-        <button 
+        <button
           className="tw:border-2 tw:border-orange-400 tw:text-orange-500 tw:font-bold tw:px-6 tw:py-1 tw:rounded-full tw:hover:bg-orange-50 tw:transition-colors tw:cursor-pointer"
           onClick={() => dispatch(draftPlayer(player.id))}
         >
