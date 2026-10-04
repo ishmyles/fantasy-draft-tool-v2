@@ -47,9 +47,29 @@ const draftSlice = createSlice({
         
         state.pickHistory.push(player);
       }
+    },
+    undoLastPick(state) {
+      if (state.pickHistory.length === 0) return;
+      
+      const lastPick = state.pickHistory.pop()!;
+      
+      if (
+        state.myRoster.length > 0 && 
+        state.myRoster[state.myRoster.length - 1].id === lastPick.id
+      ) {
+        state.myRoster.pop();
+      }
+      
+      state.availablePlayers.push(lastPick);
+      state.availablePlayers.sort((a, b) => a.rank - b.rank);
+    },
+    resetDraft(state) {
+      state.availablePlayers = playersData as Player[];
+      state.myRoster = [];
+      state.pickHistory = [];
     }
   }
 });
 
-export const { setPlayerList, draftPlayer, markUnavailable } = draftSlice.actions;
+export const { setPlayerList, draftPlayer, markUnavailable, undoLastPick, resetDraft } = draftSlice.actions;
 export default draftSlice.reducer;
