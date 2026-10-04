@@ -1,9 +1,28 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { PlayerCard } from "../PlayerCard/PlayerCard";
 
 export const PlayerList: React.FC = () => {
-  const players = useAppSelector((state) => state.draft.availablePlayers);
+  const availablePlayers = useAppSelector((state) => state.draft.availablePlayers);
+  const filters = useAppSelector((state) => state.draft.filters);
+
+  const filteredPlayers = useMemo(() => {
+    return availablePlayers.filter((player) => {
+      if (filters.search && !player.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (filters.team !== "All Teams" && player.team !== filters.team) return false;
+      
+      if (filters.position !== "All") {
+        let validPositions = [filters.position];
+        if (filters.position === "G") validPositions = ["PG", "SG", "G"];
+        if (filters.position === "F") validPositions = ["SF", "PF", "F"];
+        
+        const hasPositionMatch = player.position.some(p => validPositions.includes(p));
+        if (!hasPositionMatch) return false;
+      }
+      
+      return true;
+    });
+  }, [availablePlayers, filters]);
 
   const headers = [
     "GP",
@@ -40,7 +59,7 @@ export const PlayerList: React.FC = () => {
 
         {/* Scrollable Body */}
         <div className="tw:flex-1 tw:min-h-0 tw:overflow-y-auto tw:pr-2 tw:min-w-max">
-          {players.map((player) => (
+          {filteredPlayers.map((player) => (
             <PlayerCard key={player.id} player={player} />
           ))}
         </div>

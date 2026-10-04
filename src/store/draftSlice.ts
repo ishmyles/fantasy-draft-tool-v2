@@ -8,18 +8,40 @@ interface DraftState {
   availablePlayers: Player[];
   myRoster: Player[];
   pickHistory: Player[];
+  filters: {
+    search: string;
+    team: string;
+    position: string;
+  };
 }
 
 const initialState: DraftState = {
   availablePlayers: playersData as Player[],
   myRoster: [],
   pickHistory: [],
+  filters: {
+    search: "",
+    team: "All Teams",
+    position: "All",
+  },
 };
 
 const draftSlice = createSlice({
   name: "draft",
   initialState,
   reducers: {
+    setSearch(state, action: PayloadAction<string>) {
+      state.filters.search = action.payload;
+    },
+    setTeamFilter(state, action: PayloadAction<string>) {
+      state.filters.team = action.payload;
+    },
+    setPositionFilter(state, action: PayloadAction<string>) {
+      state.filters.position = action.payload;
+    },
+    clearFilters(state) {
+      state.filters = { search: "", team: "All Teams", position: "All" };
+    },
     setPlayerList(state, action: PayloadAction<Player[]>) {
       state.availablePlayers = action.payload;
     },
@@ -71,5 +93,15 @@ const draftSlice = createSlice({
   }
 });
 
-export const { setPlayerList, draftPlayer, markUnavailable, undoLastPick, resetDraft } = draftSlice.actions;
+export const { 
+  setPlayerList, 
+  draftPlayer, 
+  markUnavailable, 
+  undoLastPick, 
+  resetDraft,
+  setSearch,
+  setTeamFilter,
+  setPositionFilter,
+  clearFilters
+} = draftSlice.actions;
 export default draftSlice.reducer;

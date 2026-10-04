@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Header } from "./components/Header/Header";
+import { FilterBar } from "./components/FilterBar/FilterBar";
 import { PlayerList } from "./components/PlayerList/PlayerList";
 import { SidePanel } from "./components/SidePanel/SidePanel";
 
@@ -20,8 +21,9 @@ function App() {
           </div>
         )}
         <div
-          className={`${borderString} tw:bg-white tw:flex-1 tw:min-w-0 tw:min-h-0 tw:rounded-lg tw:overflow-hidden`}
+          className={`${borderString} tw:bg-white tw:flex-1 tw:min-w-0 tw:min-h-0 tw:rounded-lg tw:overflow-hidden tw:flex tw:flex-col`}
         >
+          <FilterBar />
           <PlayerList />
         </div>
       </div>
