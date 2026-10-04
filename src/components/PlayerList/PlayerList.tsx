@@ -1,11 +1,9 @@
-import React, { useState } from "react";
-import type { Player } from "../../types/player";
-// @ts-ignore - Ignoring because players.js doesn't have types yet
-import playersData from "../../data/players.js";
+import React from "react";
+import { useAppSelector } from "../../store/hooks";
 import { PlayerCard } from "../PlayerCard/PlayerCard";
 
 export const PlayerList: React.FC = () => {
-  const [players, setPlayers] = useState<Player[]>(playersData as Player[]);
+  const players = useAppSelector((state) => state.player.playerList);
 
   const headers = [
     "GP",
