@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { Header } from "./components/Header/Header";
 import { PlayerList } from "./components/PlayerList/PlayerList";
+import { SidePanel } from "./components/SidePanel/SidePanel";
 
 const borderString = "tw:border tw:border-black";
 
@@ -13,9 +14,9 @@ function App() {
       <div className="tw:flex tw:gap-1 tw:flex-1 tw:p-1 tw:min-h-0 tw:min-w-0">
         {isSidepanelOpen && (
           <div
-            className={`${borderString} tw:bg-white tw:min-w-96 tw:h-full tw:rounded-lg`}
+            className={`${borderString} tw:bg-white tw:w-96 tw:shrink-0 tw:h-full tw:rounded-lg tw:overflow-hidden`}
           >
-            {/* SidePanel */}
+            <SidePanel />
           </div>
         )}
         <div
