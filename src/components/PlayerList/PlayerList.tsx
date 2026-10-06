@@ -47,14 +47,15 @@ export const PlayerList: React.FC = () => {
         {/* Header Row */}
         <div className="tw:flex tw:items-center tw:px-4 tw:py-3 tw:text-xs tw:font-bold tw:text-slate-400 tw:uppercase tw:mb-2 tw:min-w-max">
           <div className="tw:w-8 tw:shrink-0 tw:mr-4">#</div>
-          <div className="tw:w-64 tw:shrink-0 tw:mr-4">Player</div>
-          <div className="tw:w-10 tw:shrink-0">{headers[0]}</div>
-          {headers.slice(1).map((header) => (
-            <div key={header} className="tw:w-12 tw:shrink-0">
-              {header}
-            </div>
-          ))}
-          <div className="tw:ml-auto"></div>
+          <div className="tw:w-80 tw:shrink-0">Player</div>
+          <div className="tw:flex tw:items-center tw:mx-auto">
+            <div className="tw:w-10 tw:shrink-0">{headers[0]}</div>
+            {headers.slice(1).map((header) => (
+              <div key={header} className="tw:w-12 tw:shrink-0">
+                {header}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Scrollable Body */}
