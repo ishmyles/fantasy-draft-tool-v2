@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { PlayerCard } from "../PlayerCard/PlayerCard";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 export const PlayerList: React.FC = () => {
   const availablePlayers = useAppSelector((state) => state.draft.availablePlayers);
@@ -23,6 +24,15 @@ export const PlayerList: React.FC = () => {
       return true;
     });
   }, [availablePlayers, filters]);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: filteredPlayers.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 64, // Rough pixel height of a PlayerCard
+    overscan: 5,
+  });
 
   const headers = [
     "GP",
@@ -59,10 +69,37 @@ export const PlayerList: React.FC = () => {
         </div>
 
         {/* Scrollable Body */}
-        <div className="tw:flex-1 tw:min-h-0 tw:overflow-y-auto tw:pr-2 tw:min-w-max">
-          {filteredPlayers.map((player) => (
-            <PlayerCard key={player.id} player={player} />
-          ))}
+        <div 
+          ref={parentRef}
+          className="tw:flex-1 tw:min-h-0 tw:overflow-y-auto tw:pr-2 tw:min-w-max"
+        >
+          <div
+            style={{
+              height: `${virtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+              const player = filteredPlayers[virtualItem.index];
+              return (
+                <div
+                  key={virtualItem.key}
+                  className="tw:pb-2"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualItem.size}px`,
+                    transform: `translateY(${virtualItem.start}px)`,
+                  }}
+                >
+                  <PlayerCard player={player} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

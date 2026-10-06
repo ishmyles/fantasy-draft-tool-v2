@@ -23,7 +23,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const formatPct = (num: number) => num.toFixed(3).replace(/^0+/, "");
 
   return (
-    <div className="tw:flex tw:items-center tw:px-4 tw:py-3 tw:bg-white tw:border tw:border-gray-100 tw:rounded-xl tw:mb-2 tw:shadow-sm tw:min-w-max">
+    <div className="tw:flex tw:items-center tw:px-4 tw:py-3 tw:bg-white tw:border tw:border-gray-100 tw:rounded-xl tw:shadow-sm tw:min-w-max tw:h-full">
       {/* Rank */}
       <div className="tw:shrink-0 tw:font-bold tw:text-slate-700 tw:bg-slate-100 tw:rounded-full tw:h-8 tw:w-8 tw:flex tw:items-center tw:justify-center tw:mr-4">
         {player.rank}
