@@ -2,7 +2,11 @@ import React from "react";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import { draftPlayer, markUnavailable, toggleWishlist } from "../../store/draftSlice";
+import {
+  draftPlayer,
+  markUnavailable,
+  toggleWishlist,
+} from "../../store/draftSlice";
 
 interface PlayerCardProps {
   player: Player;
@@ -25,9 +29,9 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const formatPct = (num: number) => num.toFixed(3).replace(/^0+/, "");
 
   return (
-    <div className="tw:flex tw:items-center tw:px-4 tw:py-3 tw:bg-white tw:border tw:border-gray-100 tw:rounded-xl tw:shadow-sm tw:min-w-max tw:h-full">
+    <div className="tw:flex tw:items-center tw:px-3 tw:py-3 tw:bg-white tw:border tw:border-gray-100 tw:rounded-xl tw:shadow-sm tw:min-w-max tw:h-full">
       {/* Rank */}
-      <div className="tw:shrink-0 tw:font-bold tw:text-slate-700 tw:bg-slate-100 tw:rounded-full tw:h-8 tw:w-8 tw:flex tw:items-center tw:justify-center tw:mr-4">
+      <div className="tw:shrink-0 tw:font-bold tw:text-slate-700 tw:tabular-nums tw:w-10 tw:mr-2">
         {player.rank}
       </div>
 
@@ -125,7 +129,6 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
           {formatNum(stats.pointsPerGame)}
         </div>
       </div>
-
     </div>
   );
 };
