@@ -8,6 +8,7 @@ interface DraftState {
   availablePlayers: Player[];
   myRoster: Player[];
   pickHistory: Player[];
+  wishlist: Player[];
   filters: {
     search: string;
     team: string;
@@ -19,6 +20,7 @@ const initialState: DraftState = {
   availablePlayers: playersData as Player[],
   myRoster: [],
   pickHistory: [],
+  wishlist: [],
   filters: {
     search: "",
     team: "All Teams",
@@ -56,6 +58,7 @@ const draftSlice = createSlice({
         
         state.pickHistory.push(player);
         state.myRoster.push(player);
+        state.wishlist = state.wishlist.filter(p => p.id !== playerId);
       }
     },
     markUnavailable(state, action: PayloadAction<string>) {
@@ -68,6 +71,20 @@ const draftSlice = createSlice({
         state.availablePlayers.splice(playerIndex, 1);
         
         state.pickHistory.push(player);
+        state.wishlist = state.wishlist.filter(p => p.id !== playerId);
+      }
+    },
+    toggleWishlist(state, action: PayloadAction<string>) {
+      const playerId = action.payload;
+      const wishlistIndex = state.wishlist.findIndex(p => p.id === playerId);
+      
+      if (wishlistIndex !== -1) {
+        state.wishlist.splice(wishlistIndex, 1);
+      } else {
+        const player = state.availablePlayers.find(p => p.id === playerId);
+        if (player) {
+          state.wishlist.push(player);
+        }
       }
     },
     undoLastPick(state) {
@@ -89,6 +106,7 @@ const draftSlice = createSlice({
       state.availablePlayers = playersData as Player[];
       state.myRoster = [];
       state.pickHistory = [];
+      state.wishlist = [];
     }
   }
 });
@@ -102,6 +120,7 @@ export const {
   setSearch,
   setTeamFilter,
   setPositionFilter,
-  clearFilters
+  clearFilters,
+  toggleWishlist
 } = draftSlice.actions;
 export default draftSlice.reducer;

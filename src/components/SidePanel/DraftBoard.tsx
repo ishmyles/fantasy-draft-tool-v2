@@ -1,19 +1,23 @@
 import React, { useState, useMemo } from "react";
-import { useAppSelector } from "../../store/hooks";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { toggleWishlist } from "../../store/draftSlice";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
 
 export const DraftBoard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"roster" | "history">("roster");
+  const [activeTab, setActiveTab] = useState<"roster" | "wishlist" | "history">(
+    "roster",
+  );
   const myRoster = useAppSelector((state) => state.draft.myRoster);
   const pickHistory = useAppSelector((state) => state.draft.pickHistory);
+  const wishlist = useAppSelector((state) => state.draft.wishlist);
 
   return (
     <div className="tw:flex tw:flex-col tw:h-full tw:w-full tw:min-w-0">
       {/* Tab Bar */}
       <div className="tw:flex tw:border-b tw:border-gray-200">
         <button
-          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-4 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
             activeTab === "roster"
               ? "tw:border-orange-500 tw:text-orange-500"
               : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
@@ -28,7 +32,23 @@ export const DraftBoard: React.FC = () => {
           Roster
         </button>
         <button
-          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-4 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+            activeTab === "wishlist"
+              ? "tw:border-orange-500 tw:text-orange-500"
+              : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
+          }`}
+          onClick={() => setActiveTab("wishlist")}
+        >
+          <Icon
+            name="Star"
+            size={18}
+            stroke={activeTab === "wishlist" ? "#f97316" : "currentColor"}
+            fill={activeTab === "wishlist" ? "#f97316" : "none"}
+          />
+          Wishlist
+        </button>
+        <button
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
             activeTab === "history"
               ? "tw:border-orange-500 tw:text-orange-500"
               : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
@@ -40,21 +60,19 @@ export const DraftBoard: React.FC = () => {
             size={18}
             stroke={activeTab === "history" ? "#f97316" : "currentColor"}
           />
-          Pick History
+          History
         </button>
       </div>
 
       {/* Content */}
-      {activeTab === "roster" ? (
-        <RosterView players={myRoster} />
-      ) : (
-        <HistoryView players={pickHistory} />
-      )}
+      {activeTab === "roster" && <RosterView players={myRoster} />}
+      {activeTab === "wishlist" && <WishlistView players={wishlist} />}
+      {activeTab === "history" && <HistoryView players={pickHistory} />}
     </div>
   );
 };
 
-/* ── Roster View ─────────────────────────────────── */
+/* ── Reusable Player Stats Table ─────────────────── */
 
 const STAT_HEADERS = [
   "GP",
@@ -73,7 +91,21 @@ const STAT_HEADERS = [
   "PTS",
 ];
 
-const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
+interface PlayerStatsTableProps {
+  players: Player[];
+  showAverages: boolean;
+  title: string;
+  icon: IconName;
+  onRemovePlayer?: (playerId: string) => void;
+}
+
+const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
+  players,
+  showAverages,
+  title,
+  icon,
+  onRemovePlayer,
+}) => {
   const totals = useMemo(() => {
     return players.reduce(
       (acc, p) => {
@@ -127,11 +159,12 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
       {/* Header */}
       <div className="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-3 tw:shrink-0">
         <div className="tw:flex tw:items-center tw:gap-2">
-          <Icon name="Roster" size={20} stroke="#334155" />
-          <span className="tw:font-bold tw:text-slate-800">My Roster</span>
+          <Icon name={icon} size={20} stroke="#334155" />
+          <span className="tw:font-bold tw:text-slate-800">{title}</span>
         </div>
         <span className="tw:text-sm tw:text-slate-400 tw:font-semibold">
-          {players.length}/14
+          {players.length}
+          {title === "My Roster" ? "/14" : ""}
         </span>
       </div>
 
@@ -141,7 +174,7 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
           {/* Sticky Header Row */}
           <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-b tw:border-gray-200 tw:shrink-0">
             {/* Sticky Player Column Header */}
-            <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-40 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
+            <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
               Player
             </div>
             {/* Stats Headers */}
@@ -171,13 +204,37 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
                   className="tw:flex tw:items-center tw:border-b tw:border-gray-100 tw:hover:bg-slate-50 tw:group tw:transition-colors"
                 >
                   {/* Sticky Player Info Column */}
-                  <div className="tw:sticky tw:left-0 tw:z-10 tw:bg-white group-hover:tw:bg-slate-50 tw:flex tw:flex-col tw:w-40 tw:shrink-0 tw:px-4 tw:py-1 tw:text-left tw:border-r tw:border-transparent tw:transition-colors">
-                    <span className="tw:font-bold tw:text-slate-800 tw:text-xs tw:truncate">
-                      {player.name}
-                    </span>
-                    <span className="tw:text-[11px] tw:text-slate-500">
-                      {player.team} - {player.position.join(", ")}
-                    </span>
+                  <div className="tw:sticky tw:left-0 tw:z-10 tw:bg-white group-hover:tw:bg-slate-50 tw:flex tw:items-center tw:justify-between tw:w-48 tw:shrink-0 tw:px-4 tw:py-1 tw:text-left tw:border-r tw:border-transparent tw:transition-colors">
+                    <div className="tw:flex tw:flex-col tw:min-w-0">
+                      <span className="tw:font-bold tw:text-slate-800 tw:text-xs tw:truncate">
+                        {player.name}
+                      </span>
+                      <span className="tw:text-[11px] tw:text-slate-500 tw:truncate">
+                        {player.team} - {player.position.join(", ")}
+                      </span>
+                    </div>
+                    {onRemovePlayer && (
+                      <button
+                        onClick={() => onRemovePlayer(player.id)}
+                        className="tw:text-slate-400 hover:tw:text-red-500 tw:transition-colors tw:ml-2 tw:shrink-0"
+                        title="Remove from Wishlist"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="tw:h-4 tw:w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    )}
                   </div>
 
                   {/* Stats Columns */}
@@ -229,9 +286,9 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
           </div>
 
           {/* Sticky Average Footer */}
-          {players.length > 0 && (
+          {showAverages && players.length > 0 && (
             <div className="tw:sticky tw:bottom-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-100 tw:border-t tw:border-gray-300 tw:shrink-0">
-              <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-100 tw:px-4 tw:py-2 tw:w-40 tw:shrink-0 tw:text-[11px] tw:font-bold tw:uppercase tw:text-left tw:border-r tw:border-transparent">
+              <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-100 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:text-[11px] tw:font-bold tw:uppercase tw:text-left tw:border-r tw:border-transparent">
                 Average
               </div>
               <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
@@ -281,6 +338,30 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+/* ── Views ───────────────────────────────────────── */
+
+const RosterView: React.FC<{ players: Player[] }> = ({ players }) => (
+  <PlayerStatsTable
+    players={players}
+    showAverages={true}
+    title="My Roster"
+    icon="Roster"
+  />
+);
+
+const WishlistView: React.FC<{ players: Player[] }> = ({ players }) => {
+  const dispatch = useAppDispatch();
+  return (
+    <PlayerStatsTable
+      players={players}
+      showAverages={false}
+      title="Wishlist"
+      icon="Star"
+      onRemovePlayer={(id) => dispatch(toggleWishlist(id))}
+    />
   );
 };
 

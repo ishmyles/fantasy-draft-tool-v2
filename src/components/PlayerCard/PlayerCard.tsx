@@ -1,8 +1,8 @@
 import React from "react";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
-import { useAppDispatch } from "../../store/hooks";
-import { draftPlayer, markUnavailable } from "../../store/draftSlice";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { draftPlayer, markUnavailable, toggleWishlist } from "../../store/draftSlice";
 
 interface PlayerCardProps {
   player: Player;
@@ -10,6 +10,8 @@ interface PlayerCardProps {
 
 export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const dispatch = useAppDispatch();
+  const wishlist = useAppSelector((state) => state.draft.wishlist);
+  const isWishlisted = wishlist.some((p) => p.id === player.id);
   const stats = player.statsPrediction;
 
   // Calculate missing stats
@@ -32,7 +34,11 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
       {/* Player Info & Actions Column */}
       <div className="tw:w-80 tw:shrink-0 tw:flex tw:items-center tw:justify-between">
         {/* Child 1: Avatar and Name */}
-        <div className="tw:flex tw:items-center tw:gap-3 tw:overflow-hidden">
+        <div
+          className="tw:flex tw:items-center tw:gap-3 tw:overflow-hidden tw:cursor-pointer tw:group"
+          onClick={() => dispatch(toggleWishlist(player.id))}
+          title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+        >
           <div className="tw:h-10 tw:w-10 tw:bg-gray-200 tw:rounded-full tw:overflow-hidden tw:shrink-0">
             {/* Placeholder for player image */}
             <img
@@ -41,8 +47,15 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
             />
           </div>
           <div className="tw:flex tw:flex-col tw:text-start tw:overflow-hidden">
-            <div className="tw:font-bold tw:text-slate-800 tw:truncate">
-              {player.name}
+            <div className="tw:flex tw:items-center tw:gap-1 tw:truncate">
+              <span className="tw:font-bold tw:text-slate-800 tw:truncate group-hover:tw:text-orange-500 tw:transition-colors">
+                {player.name}
+              </span>
+              {isWishlisted && (
+                <div className="tw:shrink-0">
+                  <Icon name="Star" size={14} fill="#f97316" stroke="#f97316" />
+                </div>
+              )}
             </div>
             <div className="tw:text-xs tw:text-slate-500 tw:truncate">
               {player.team} • {player.position.join(", ")}
