@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useAppSelector } from "../../store/hooks";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
@@ -74,6 +74,54 @@ const STAT_HEADERS = [
 ];
 
 const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
+  const totals = useMemo(() => {
+    return players.reduce(
+      (acc, p) => {
+        const s = p.statsPrediction;
+        const fgm = s.fieldGoalsMade || 0;
+        const fga = s.fieldGoalPct ? fgm / s.fieldGoalPct : 0;
+        const ftm = s.pointsPerGame - 2 * fgm - s.threePointersMade;
+        const fta = s.freeThrowPct ? ftm / s.freeThrowPct : 0;
+
+        acc.gp += s.gamesPlayed || 0;
+        acc.fgm += fgm;
+        acc.fga += fga;
+        acc.ftm += ftm;
+        acc.fta += fta;
+        acc.tpm += s.threePointersMade || 0;
+        acc.reb += s.reboundsPerGame || 0;
+        acc.ast += s.assistsPerGame || 0;
+        acc.stl += s.stealsPerGame || 0;
+        acc.blk += s.blocksPerGame || 0;
+        acc.to += s.turnoversPerGame || 0;
+        acc.pts += s.pointsPerGame || 0;
+        return acc;
+      },
+      {
+        gp: 0,
+        fgm: 0,
+        fga: 0,
+        ftm: 0,
+        fta: 0,
+        tpm: 0,
+        reb: 0,
+        ast: 0,
+        stl: 0,
+        blk: 0,
+        to: 0,
+        pts: 0,
+      },
+    );
+  }, [players]);
+
+  const n = players.length || 1;
+  const avgFGPct = totals.fga > 0 ? totals.fgm / totals.fga : 0;
+  const avgFTPct = totals.fta > 0 ? totals.ftm / totals.fta : 0;
+
+  const formatNum = (num: number, decimals: number = 1) =>
+    num.toFixed(decimals);
+  const formatPct = (num: number) => num.toFixed(3).replace(/^0+/, "");
+
   return (
     <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:w-full tw:min-w-0">
       {/* Header */}
@@ -83,104 +131,153 @@ const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
           <span className="tw:font-bold tw:text-slate-800">My Roster</span>
         </div>
         <span className="tw:text-sm tw:text-slate-400 tw:font-semibold">
-          {players.length}/16
+          {players.length}/14
         </span>
       </div>
 
-      {/* Scrollable Container */}
-      <div className="tw:flex-1 tw:overflow-auto tw:min-h-0">
-        {/* Sticky Header Row */}
-        <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-b tw:border-gray-200 tw:min-w-max">
-          {/* Sticky Player Column Header */}
-          <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-40 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
-            Player
-          </div>
-          {/* Stats Headers */}
-          {STAT_HEADERS.map((header) => (
-            <div
-              key={header}
-              className="tw:w-12 tw:shrink-0 tw:text-center tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase"
-            >
-              {header}
+      {/* Single Scrollable Container for both X and Y */}
+      <div className="tw:flex-1 tw:overflow-auto tw:min-h-0 tw:relative">
+        <div className="tw:min-w-max tw:flex tw:flex-col tw:min-h-full">
+          {/* Sticky Header Row */}
+          <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-b tw:border-gray-200 tw:shrink-0">
+            {/* Sticky Player Column Header */}
+            <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-40 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
+              Player
             </div>
-          ))}
-        </div>
-
-        {/* Player Rows */}
-        <div className="tw:min-w-max tw:pb-2">
-          {players.map((player) => {
-            const stats = player.statsPrediction;
-            const fgm = stats.fieldGoalsMade || 0;
-            const fga = stats.fieldGoalPct ? fgm / stats.fieldGoalPct : 0;
-            const ftm = stats.pointsPerGame - 2 * fgm - stats.threePointersMade;
-            const fta = stats.freeThrowPct ? ftm / stats.freeThrowPct : 0;
-
-            const formatNum = (num: number, decimals: number = 1) =>
-              num.toFixed(decimals);
-            const formatPct = (num: number) =>
-              num.toFixed(3).replace(/^0+/, "");
-
-            return (
+            {/* Stats Headers */}
+            {STAT_HEADERS.map((header) => (
               <div
-                key={player.id}
-                className="tw:flex tw:items-center tw:border-b tw:border-gray-100 tw:hover:bg-slate-50 tw:group tw:transition-colors"
+                key={header}
+                className="tw:w-12 tw:shrink-0 tw:text-center tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase"
               >
-                {/* Sticky Player Info Column */}
-                <div className="tw:sticky tw:left-0 tw:z-10 tw:bg-white group-hover:tw:bg-slate-50 tw:flex tw:flex-col tw:w-40 tw:shrink-0 tw:px-4 tw:py-1 tw:text-left tw:border-r tw:border-transparent tw:transition-colors">
-                  <span className="tw:font-bold tw:text-slate-800 tw:text-xs tw:truncate">
-                    {player.name}
-                  </span>
-                  <span className="tw:text-[11px] tw:text-slate-500">
-                    {player.team} - {player.position.join(", ")}
-                  </span>
-                </div>
-
-                {/* Stats Columns */}
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {stats.gamesPlayed}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(fgm)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(fga)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatPct(stats.fieldGoalPct)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(ftm)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(fta)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatPct(stats.freeThrowPct)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.threePointersMade)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.reboundsPerGame)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.assistsPerGame)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.stealsPerGame)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.blocksPerGame)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
-                  {formatNum(stats.turnoversPerGame)}
-                </div>
-                <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
-                  {formatNum(stats.pointsPerGame)}
-                </div>
+                {header}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Player Rows Body */}
+          <div className="tw:flex-1 tw:flex tw:flex-col tw:pb-2">
+            {players.map((player) => {
+              const stats = player.statsPrediction;
+              const fgm = stats.fieldGoalsMade || 0;
+              const fga = stats.fieldGoalPct ? fgm / stats.fieldGoalPct : 0;
+              const ftm =
+                stats.pointsPerGame - 2 * fgm - stats.threePointersMade;
+              const fta = stats.freeThrowPct ? ftm / stats.freeThrowPct : 0;
+
+              return (
+                <div
+                  key={player.id}
+                  className="tw:flex tw:items-center tw:border-b tw:border-gray-100 tw:hover:bg-slate-50 tw:group tw:transition-colors"
+                >
+                  {/* Sticky Player Info Column */}
+                  <div className="tw:sticky tw:left-0 tw:z-10 tw:bg-white group-hover:tw:bg-slate-50 tw:flex tw:flex-col tw:w-40 tw:shrink-0 tw:px-4 tw:py-1 tw:text-left tw:border-r tw:border-transparent tw:transition-colors">
+                    <span className="tw:font-bold tw:text-slate-800 tw:text-xs tw:truncate">
+                      {player.name}
+                    </span>
+                    <span className="tw:text-[11px] tw:text-slate-500">
+                      {player.team} - {player.position.join(", ")}
+                    </span>
+                  </div>
+
+                  {/* Stats Columns */}
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {stats.gamesPlayed}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(fgm)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(fga)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatPct(stats.fieldGoalPct)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(ftm)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(fta)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatPct(stats.freeThrowPct)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.threePointersMade)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.reboundsPerGame)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.assistsPerGame)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.stealsPerGame)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.blocksPerGame)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:text-slate-600">
+                    {formatNum(stats.turnoversPerGame)}
+                  </div>
+                  <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                    {formatNum(stats.pointsPerGame)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Sticky Average Footer */}
+          {players.length > 0 && (
+            <div className="tw:sticky tw:bottom-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-100 tw:border-t tw:border-gray-300 tw:shrink-0">
+              <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-100 tw:px-4 tw:py-2 tw:w-40 tw:shrink-0 tw:text-[11px] tw:font-bold tw:uppercase tw:text-left tw:border-r tw:border-transparent">
+                Average
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.gp / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.fgm / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.fga / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatPct(avgFGPct)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.ftm / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.fta / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatPct(avgFTPct)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.tpm / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.reb / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.ast / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.stl / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.blk / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.to / n)}
+              </div>
+              <div className="tw:w-12 tw:shrink-0 tw:text-center tw:text-xs tw:font-bold tw:text-slate-800">
+                {formatNum(totals.pts / n)}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
