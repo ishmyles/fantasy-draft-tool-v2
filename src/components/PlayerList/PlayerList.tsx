@@ -62,7 +62,7 @@ export const PlayerList: React.FC = () => {
   ];
 
   return (
-    <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:bg-slate-50 tw:p-4 tw:pt-1">
+    <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:bg-slate-50 tw:p-4 tw:py-1">
       {/* Single Scroll Container for both X and Y */}
       <div
         ref={parentRef}

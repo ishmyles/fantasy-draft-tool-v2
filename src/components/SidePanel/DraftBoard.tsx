@@ -173,7 +173,7 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
       <div className="tw:flex-1 tw:overflow-auto tw:min-h-0 tw:relative">
         <div className="tw:min-w-max tw:flex tw:flex-col tw:min-h-full">
           {/* Sticky Header Row */}
-          <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-b tw:border-gray-200 tw:shrink-0">
+          <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-y tw:border-slate-200/60 tw:shrink-0">
             {/* Sticky Player Column Header */}
             <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
               Player
@@ -288,7 +288,7 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
 
           {/* Sticky Average Footer */}
           {showAverages && players.length > 0 && (
-            <div className="tw:sticky tw:bottom-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-100 tw:border-t tw:border-gray-300 tw:shrink-0">
+            <div className="tw:sticky tw:bottom-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-100 tw:border-t tw:border-slate-200/60 tw:shrink-0">
               <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-100 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:text-[11px] tw:font-bold tw:uppercase tw:text-left tw:border-r tw:border-transparent">
                 Average
               </div>
