@@ -226,7 +226,7 @@ async function getPlayerData() {
       const nextBtn = page.locator("button.Pagination__Button--next");
       const isNextDisabled = await nextBtn.isDisabled().catch(() => true);
 
-      if (!isNextDisabled && count <= 3) {
+      if (!isNextDisabled && count <= 2) {
         // REMOVE COUNT  && count <= 4
         console.log("Moving to next page...");
         await nextBtn.click();
@@ -277,10 +277,13 @@ async function getPlayerData() {
   });
 
   // Save the data
-  const outputPath = path.resolve(__dirname, "../src/data/players.js");
+  const outputPath = path.resolve(__dirname, "../src/data/players.json");
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
-  const fileContent = `const players = ${JSON.stringify(mergedPlayers, null, 2)};\n\nexport default players;\n`;
-  await fs.writeFile(outputPath, fileContent, "utf-8");
+  await fs.writeFile(
+    outputPath,
+    JSON.stringify(mergedPlayers, null, 2),
+    "utf-8",
+  );
 
   console.log(
     `Successfully saved ${mergedPlayers.length} merged players to ${outputPath}`,
