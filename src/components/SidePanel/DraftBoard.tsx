@@ -4,6 +4,7 @@ import { toggleWishlist } from "../../store/draftSlice";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
 import type { IconName } from "../Icon/icon.d";
+import { usePlayerSort } from "../../hooks/usePlayerSort";
 
 export const DraftBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"roster" | "wishlist" | "history">(
@@ -155,6 +156,8 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
     num.toFixed(decimals);
   const formatPct = (num: number) => num.toFixed(3).replace(/^0+/, "");
 
+  const { sortedPlayers, sortConfig, handleSort } = usePlayerSort(players);
+
   return (
     <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:w-full tw:min-w-0">
       {/* Header */}
@@ -175,23 +178,43 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
           {/* Sticky Header Row */}
           <div className="tw:sticky tw:top-0 tw:z-20 tw:flex tw:items-center tw:bg-slate-50 tw:border-y tw:border-slate-200/60 tw:shrink-0">
             {/* Sticky Player Column Header */}
-            <div className="tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase tw:text-left">
-              Player
-            </div>
+            <button
+              onClick={() => handleSort("Player")}
+              className={`tw:sticky tw:left-0 tw:z-30 tw:bg-slate-50 tw:px-4 tw:py-2 tw:w-48 tw:shrink-0 tw:flex tw:items-center tw:gap-1 hover:tw:text-slate-700 tw:cursor-pointer tw:transition-colors tw:text-[10px] tw:font-semibold tw:uppercase tw:text-left ${
+                sortConfig.key === "Player" ? "tw:text-orange-500" : "tw:text-slate-400"
+              }`}
+              title="Sort by Player Name"
+            >
+              <span>Player</span>
+              {sortConfig.key === "Player" && (
+                <span className="tw:text-[8px]">
+                  {sortConfig.direction === "asc" ? "▲" : "▼"}
+                </span>
+              )}
+            </button>
             {/* Stats Headers */}
             {STAT_HEADERS.map((header) => (
-              <div
+              <button
                 key={header}
-                className="tw:w-12 tw:shrink-0 tw:text-center tw:text-[10px] tw:font-semibold tw:text-slate-400 tw:uppercase"
+                onClick={() => handleSort(header)}
+                className={`tw:w-12 tw:shrink-0 tw:flex tw:items-center tw:justify-center tw:gap-0.5 hover:tw:text-slate-700 tw:cursor-pointer tw:transition-colors tw:text-[10px] tw:font-semibold tw:uppercase ${
+                  sortConfig.key === header ? "tw:text-orange-500" : "tw:text-slate-400"
+                }`}
+                title={`Sort by ${header}`}
               >
-                {header}
-              </div>
+                <span>{header}</span>
+                {sortConfig.key === header && (
+                  <span className="tw:text-[8px]">
+                    {sortConfig.direction === "asc" ? "▲" : "▼"}
+                  </span>
+                )}
+              </button>
             ))}
           </div>
 
           {/* Player Rows Body */}
           <div className="tw:flex-1 tw:flex tw:flex-col tw:pb-2">
-            {players.map((player) => {
+            {sortedPlayers.map((player) => {
               const stats = player.statsPrediction;
               const fgm = stats.fieldGoalsMade || 0;
               const fga = stats.fieldGoalAttempts || 0;

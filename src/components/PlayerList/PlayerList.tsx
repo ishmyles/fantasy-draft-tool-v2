@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from "react";
 import { useAppSelector } from "../../store/hooks";
 import { PlayerCard } from "../PlayerCard/PlayerCard";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { usePlayerSort } from "../../hooks/usePlayerSort";
 
 export const PlayerList: React.FC = () => {
   const availablePlayers = useAppSelector(
@@ -34,14 +35,16 @@ export const PlayerList: React.FC = () => {
     });
   }, [availablePlayers, filters]);
 
+  const { sortedPlayers, sortConfig, handleSort } = usePlayerSort(filteredPlayers);
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
-    count: filteredPlayers.length,
+    count: sortedPlayers.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 64, // Rough pixel height of a PlayerCard
     overscan: 5,
-    getItemKey: (index) => filteredPlayers[index]?.id ?? index,
+    getItemKey: (index) => sortedPlayers[index]?.id ?? index,
   });
 
   const headers = [
@@ -71,14 +74,40 @@ export const PlayerList: React.FC = () => {
         <div className="tw:min-w-max tw:flex tw:flex-col">
           {/* Sticky Header Row */}
           <div className="tw:sticky tw:top-0 tw:z-20 tw:bg-slate-50 tw:flex tw:items-center tw:px-3 tw:py-2.5 tw:text-xs tw:font-bold tw:text-slate-400 tw:uppercase tw:border-b tw:border-slate-200/60">
-            <div className="tw:w-10 tw:shrink-0 tw:mr-2">#</div>
+            <button
+              onClick={() => handleSort("#")}
+              className={`tw:w-10 tw:shrink-0 tw:mr-2 tw:flex tw:items-center tw:gap-1 hover:tw:text-slate-700 tw:cursor-pointer tw:transition-colors tw:text-xs tw:font-bold tw:uppercase ${
+                sortConfig.key === "#" ? "tw:text-orange-500" : ""
+              }`}
+              title="Sort by Rank"
+            >
+              <span>#</span>
+              {sortConfig.key === "#" && (
+                <span className="tw:text-[10px]">
+                  {sortConfig.direction === "asc" ? "▲" : "▼"}
+                </span>
+              )}
+            </button>
             <div className="tw:w-80 tw:shrink-0">Player</div>
             <div className="tw:flex tw:items-center tw:mx-auto">
-              <div className="tw:w-10 tw:shrink-0">{headers[0]}</div>
-              {headers.slice(1).map((header) => (
-                <div key={header} className="tw:w-12 tw:shrink-0">
-                  {header}
-                </div>
+              {headers.map((header, idx) => (
+                <button
+                  key={header}
+                  onClick={() => handleSort(header)}
+                  className={`${
+                    idx === 0 ? "tw:w-10" : "tw:w-12"
+                  } tw:shrink-0 tw:flex tw:items-center tw:justify-center tw:gap-0.5 hover:tw:text-slate-700 tw:cursor-pointer tw:transition-colors tw:text-xs tw:font-bold tw:uppercase ${
+                    sortConfig.key === header ? "tw:text-orange-500" : ""
+                  }`}
+                  title={`Sort by ${header}`}
+                >
+                  <span>{header}</span>
+                  {sortConfig.key === header && (
+                    <span className="tw:text-[9px]">
+                      {sortConfig.direction === "asc" ? "▲" : "▼"}
+                    </span>
+                  )}
+                </button>
               ))}
             </div>
           </div>
@@ -93,7 +122,7 @@ export const PlayerList: React.FC = () => {
             }}
           >
             {virtualizer.getVirtualItems().map((virtualItem) => {
-              const player = filteredPlayers[virtualItem.index];
+              const player = sortedPlayers[virtualItem.index];
               if (!player) return null;
               return (
                 <div
