@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Player } from "../types/player";
 import playersData from "../data/players.json";
+import { getInitialDraftState, clearDraftData } from "../utils/storage";
 
 interface DraftState {
   availablePlayers: Player[];
@@ -15,11 +16,10 @@ interface DraftState {
   };
 }
 
+const initialDraftState = getInitialDraftState(playersData as Player[]);
+
 const initialState: DraftState = {
-  availablePlayers: playersData as Player[],
-  myRoster: [],
-  pickHistory: [],
-  wishlist: [],
+  ...initialDraftState,
   filters: {
     search: "",
     team: "All Teams",
@@ -106,6 +106,7 @@ const draftSlice = createSlice({
       state.myRoster = [];
       state.pickHistory = [];
       state.wishlist = [];
+      clearDraftData();
     }
   }
 });
