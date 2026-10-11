@@ -83,7 +83,7 @@ export const FilterBar: React.FC = () => {
         {POSITIONS.map((pos) => (
           <button
             key={pos}
-            className={`tw:px-4 tw:py-1.5 tw:rounded-full tw:text-sm tw:font-bold tw:border tw:transition-colors tw:cursor-pointer tw:shrink-0 ${
+            className={`tw:w-14 tw:text-center tw:py-1.5 tw:rounded-full tw:text-sm tw:font-bold tw:border tw:transition-colors tw:cursor-pointer tw:shrink-0 ${
               position === pos
                 ? "tw:bg-slate-800 tw:text-white tw:border-slate-800"
                 : "tw:bg-white tw:text-slate-600 tw:border-gray-200 tw:hover:bg-slate-50"
