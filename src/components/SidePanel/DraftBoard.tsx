@@ -14,11 +14,11 @@ export const DraftBoard: React.FC = () => {
   const wishlist = useAppSelector((state) => state.draft.wishlist);
 
   return (
-    <div className="tw:flex tw:flex-col tw:h-full tw:w-full tw:min-w-0">
+    <div className="tw:flex tw:flex-col tw:h-full tw:w-full tw:min-w-0 tw:pt-2">
       {/* Tab Bar */}
       <div className="tw:flex tw:border-b tw:border-gray-200">
         <button
-          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-4 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
             activeTab === "roster"
               ? "tw:border-orange-500 tw:text-orange-500"
               : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
@@ -33,7 +33,7 @@ export const DraftBoard: React.FC = () => {
           Roster
         </button>
         <button
-          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-4 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
             activeTab === "wishlist"
               ? "tw:border-orange-500 tw:text-orange-500"
               : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
@@ -49,7 +49,7 @@ export const DraftBoard: React.FC = () => {
           Wishlist
         </button>
         <button
-          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-3 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
+          className={`tw:flex-1 tw:flex tw:items-center tw:justify-center tw:gap-2 tw:py-4 tw:px-2 tw:text-sm tw:font-bold tw:uppercase tw:cursor-pointer tw:transition-colors tw:border-b-2 ${
             activeTab === "history"
               ? "tw:border-orange-500 tw:text-orange-500"
               : "tw:border-transparent tw:text-slate-400 tw:hover:text-slate-600"
@@ -158,7 +158,7 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
   return (
     <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0 tw:w-full tw:min-w-0">
       {/* Header */}
-      <div className="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-3 tw:shrink-0">
+      <div className="tw:flex tw:items-center tw:justify-between tw:px-4 tw:py-4 tw:pb-4.5 tw:shrink-0">
         <div className="tw:flex tw:items-center tw:gap-2">
           <Icon name={icon} size={20} stroke="#334155" />
           <span className="tw:font-bold tw:text-slate-800">{title}</span>
@@ -372,7 +372,7 @@ const HistoryView: React.FC<{ players: Player[] }> = ({ players }) => {
   return (
     <div className="tw:flex tw:flex-col tw:flex-1 tw:min-h-0">
       {/* Header */}
-      <div className="tw:flex tw:items-center tw:gap-2 tw:px-4 tw:py-3">
+      <div className="tw:flex tw:items-center tw:gap-2 tw:px-4 tw:py-7">
         <Icon name="History" size={20} stroke="#334155" />
         <span className="tw:font-bold tw:text-slate-800">Pick History</span>
       </div>
