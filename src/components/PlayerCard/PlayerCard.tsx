@@ -20,7 +20,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
 
   // Calculate missing stats
   const fgm = stats.fieldGoalsMade || 0;
-  const fga = stats.fieldGoalPct ? fgm / stats.fieldGoalPct : 0;
+  const fga = stats.fieldGoalAttempts || 0;
   const ftm = stats.pointsPerGame - 2 * fgm - stats.threePointersMade;
   const fta = stats.freeThrowPct ? ftm / stats.freeThrowPct : 0;
 

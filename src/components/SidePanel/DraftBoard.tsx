@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import { toggleWishlist } from "../../store/draftSlice";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
+import type { IconName } from "../Icon/icon.d";
 
 export const DraftBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"roster" | "wishlist" | "history">(
@@ -111,7 +112,7 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
       (acc, p) => {
         const s = p.statsPrediction;
         const fgm = s.fieldGoalsMade || 0;
-        const fga = s.fieldGoalPct ? fgm / s.fieldGoalPct : 0;
+        const fga = s.fieldGoalAttempts || 0;
         const ftm = s.pointsPerGame - 2 * fgm - s.threePointersMade;
         const fta = s.freeThrowPct ? ftm / s.freeThrowPct : 0;
 
@@ -193,7 +194,7 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
             {players.map((player) => {
               const stats = player.statsPrediction;
               const fgm = stats.fieldGoalsMade || 0;
-              const fga = stats.fieldGoalPct ? fgm / stats.fieldGoalPct : 0;
+              const fga = stats.fieldGoalAttempts || 0;
               const ftm =
                 stats.pointsPerGame - 2 * fgm - stats.threePointersMade;
               const fta = stats.freeThrowPct ? ftm / stats.freeThrowPct : 0;

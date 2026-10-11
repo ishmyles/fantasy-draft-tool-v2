@@ -12,10 +12,11 @@ export interface PlayerStats {
   turnoversPerGame: number;
   pointsPerGame: number;
   fieldGoalsMade: number;
+  fieldGoalAttempts: number;
 }
 
 export interface Player {
-  id: number;
+  id: string;
   rank: number;
   name: string;
   team: string;

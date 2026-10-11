@@ -32,6 +32,7 @@ export const PlayerList: React.FC = () => {
     getScrollElement: () => parentRef.current,
     estimateSize: () => 64, // Rough pixel height of a PlayerCard
     overscan: 5,
+    getItemKey: (index) => filteredPlayers[index]?.id ?? index,
   });
 
   const headers = [
@@ -82,6 +83,7 @@ export const PlayerList: React.FC = () => {
           >
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const player = filteredPlayers[virtualItem.index];
+              if (!player) return null;
               return (
                 <div
                   key={virtualItem.key}

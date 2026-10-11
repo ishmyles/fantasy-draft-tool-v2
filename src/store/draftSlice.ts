@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Player } from "../types/player";
-// @ts-ignore - players.js doesn't have types yet
-import playersData from "../data/players.js";
+import playersData from "../data/players.json";
 
 interface DraftState {
   availablePlayers: Player[];
