@@ -39,7 +39,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
       <div className="tw:w-80 tw:shrink-0 tw:flex tw:items-center tw:justify-between">
         {/* Child 1: Avatar and Name */}
         <div
-          className="tw:flex tw:items-center tw:gap-3 tw:overflow-hidden tw:cursor-pointer tw:group"
+          className="tw:flex tw:items-center tw:gap-3 tw:overflow-hidden tw:cursor-pointer tw:group tw:flex-1 tw:min-w-0 tw:mr-2"
           onClick={() => dispatch(toggleWishlist(player.id))}
           title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
         >
@@ -50,13 +50,13 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
               team={player.team}
             />
           </div>
-          <div className="tw:flex tw:flex-col tw:text-start tw:overflow-hidden">
-            <div className="tw:flex tw:items-center tw:gap-1 tw:truncate">
+          <div className="tw:flex tw:flex-col tw:text-start tw:overflow-hidden tw:flex-1 tw:min-w-0">
+            <div className="tw:flex tw:items-center tw:justify-between tw:gap-1 tw:min-w-0">
               <span className="tw:font-bold tw:text-slate-800 tw:truncate group-hover:tw:text-orange-500 tw:transition-colors">
                 {player.name}
               </span>
               {isWishlisted && (
-                <div className="tw:shrink-0">
+                <div className="tw:shrink-0 tw:ml-1">
                   <Icon name="Star" size={14} fill="#f97316" stroke="#f97316" />
                 </div>
               )}
