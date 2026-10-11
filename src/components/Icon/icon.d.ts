@@ -6,4 +6,8 @@ export type IconName = keyof typeof Icons;
 export interface IconProps extends SVGProps<SVGSVGElement> {
   name: IconName;
   size?: number | string;
+  silhouetteColor?: string;
+  jerseyColor?: string;
+  jerseyOutlineColor?: string;
+  team?: string;
 }

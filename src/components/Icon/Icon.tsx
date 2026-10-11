@@ -8,7 +8,7 @@ export const Icon = ({
   fill = "none",
   ...props
 }: IconProps) => {
-  const SelectedIcon = Icons[name];
+  const SelectedIcon = Icons[name] as React.ComponentType<any>;
 
   if (!SelectedIcon) {
     console.warn(`Icon "${name}" does not exist in the icons directory.`);
@@ -19,9 +19,10 @@ export const Icon = ({
     <SelectedIcon
       width={size}
       height={size}
+      size={size}
       stroke={stroke}
       fill={fill}
-      {...props} // Spreads rest props like className, onClick, etc.
+      {...props} // Spreads rest props like className, onClick, jerseyColor, etc.
     />
   );
 };

@@ -43,11 +43,11 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
           onClick={() => dispatch(toggleWishlist(player.id))}
           title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
         >
-          <div className="tw:h-10 tw:w-10 tw:bg-gray-200 tw:rounded-full tw:overflow-hidden tw:shrink-0">
-            {/* Placeholder for player image */}
-            <img
-              src={`https://ui-avatars.com/api/?name=${player.name.replace(" ", "+")}&background=random`}
-              alt={player.name}
+          <div className="tw:h-10 tw:w-10 tw:bg-slate-100 tw:rounded-full tw:overflow-hidden tw:shrink-0 tw:flex tw:items-center tw:justify-center">
+            <Icon
+              name="PlayerSilhouette"
+              size={40}
+              team={player.team}
             />
           </div>
           <div className="tw:flex tw:flex-col tw:text-start tw:overflow-hidden">
