@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { type HeaderProps } from "./Header.d";
 import { Icon } from "../Icon/Icon";
 import { useAppDispatch } from "../../store/hooks";
 import { undoLastPick, resetDraft } from "../../store/draftSlice";
+import { ResetDraftModal } from "../Modal/ResetDraftModal";
 
 export const Header = ({
   sidepanelState: { isSidepanelOpen, setSidePanel },
 }: HeaderProps) => {
   const dispatch = useAppDispatch();
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   return (
     <div
@@ -29,11 +32,20 @@ export const Header = ({
         </button>
         <button 
           className="tw:text-sm tw:font-semibold tw:px-3 tw:py-1.5 tw:bg-red-500 tw:hover:bg-red-600 tw:text-white tw:rounded tw:transition-colors tw:cursor-pointer"
-          onClick={() => dispatch(resetDraft())}
+          onClick={() => setIsResetModalOpen(true)}
         >
           Reset Draft
         </button>
       </div>
+
+      <ResetDraftModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={() => {
+          dispatch(resetDraft());
+          setIsResetModalOpen(false);
+        }}
+      />
     </div>
   );
 };
