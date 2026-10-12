@@ -107,6 +107,21 @@ const draftSlice = createSlice({
       state.pickHistory = [];
       state.wishlist = [];
       clearDraftData();
+    },
+    removePlayerFromRoster(state, action: PayloadAction<string>) {
+      const playerId = action.payload;
+      const playerIndex = state.myRoster.findIndex((p) => p.id === playerId);
+      if (playerIndex !== -1) {
+        const player = state.myRoster[playerIndex];
+        state.myRoster.splice(playerIndex, 1);
+
+        state.pickHistory = state.pickHistory.filter((p) => p.id !== playerId);
+
+        if (!state.availablePlayers.some((p) => p.id === playerId)) {
+          state.availablePlayers.push(player);
+          state.availablePlayers.sort((a, b) => a.rank - b.rank);
+        }
+      }
     }
   }
 });
@@ -117,6 +132,7 @@ export const {
   markUnavailable, 
   undoLastPick, 
   resetDraft,
+  removePlayerFromRoster,
   setSearch,
   setTeamFilter,
   setPositionFilter,

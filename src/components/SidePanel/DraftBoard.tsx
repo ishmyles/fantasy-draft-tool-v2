@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
-import { toggleWishlist } from "../../store/draftSlice";
+import { toggleWishlist, removePlayerFromRoster } from "../../store/draftSlice";
 import type { Player } from "../../types/player";
 import { Icon } from "../Icon/Icon";
 import type { IconName } from "../Icon/icon.d";
 import { usePlayerSort } from "../../hooks/usePlayerSort";
+import { ConfirmationModal } from "../Modal/ConfirmationModal";
 
 export const DraftBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"roster" | "wishlist" | "history">(
@@ -98,7 +99,9 @@ interface PlayerStatsTableProps {
   showAverages: boolean;
   title: string;
   icon: IconName;
-  onRemovePlayer?: (playerId: string) => void;
+  onRemovePlayer?: (player: Player) => void;
+  removeButtonTitle?: string;
+  removeIconType?: "trash" | "close";
 }
 
 const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
@@ -107,6 +110,8 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
   title,
   icon,
   onRemovePlayer,
+  removeButtonTitle = "Remove",
+  removeIconType = "close",
 }) => {
   const totals = useMemo(() => {
     return players.reduce(
@@ -239,24 +244,41 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
                     </div>
                     {onRemovePlayer && (
                       <button
-                        onClick={() => onRemovePlayer(player.id)}
-                        className="tw:text-slate-400 hover:tw:text-red-500 tw:transition-colors tw:ml-2 tw:shrink-0"
-                        title="Remove from Wishlist"
+                        onClick={() => onRemovePlayer(player)}
+                        className="tw:text-slate-400 hover:tw:text-red-500 tw:transition-colors tw:ml-2 tw:shrink-0 tw:p-0.5 tw:rounded hover:tw:bg-red-50 tw:cursor-pointer"
+                        title={removeButtonTitle}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="tw:h-4 tw:w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        {removeIconType === "trash" ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="tw:h-4 tw:w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="tw:h-4 tw:w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        )}
                       </button>
                     )}
                   </div>
@@ -367,14 +389,49 @@ const PlayerStatsTable: React.FC<PlayerStatsTableProps> = ({
 
 /* ── Views ───────────────────────────────────────── */
 
-const RosterView: React.FC<{ players: Player[] }> = ({ players }) => (
-  <PlayerStatsTable
-    players={players}
-    showAverages={true}
-    title="My Roster"
-    icon="Roster"
-  />
-);
+const RosterView: React.FC<{ players: Player[] }> = ({ players }) => {
+  const dispatch = useAppDispatch();
+  const [playerToDelete, setPlayerToDelete] = useState<Player | null>(null);
+
+  return (
+    <>
+      <PlayerStatsTable
+        players={players}
+        showAverages={true}
+        title="My Roster"
+        icon="Roster"
+        onRemovePlayer={(player) => setPlayerToDelete(player)}
+        removeButtonTitle="Delete player from roster"
+        removeIconType="trash"
+      />
+
+      <ConfirmationModal
+        isOpen={playerToDelete !== null}
+        onClose={() => setPlayerToDelete(null)}
+        onConfirm={() => {
+          if (playerToDelete) {
+            dispatch(removePlayerFromRoster(playerToDelete.id));
+            setPlayerToDelete(null);
+          }
+        }}
+        title="Delete Player"
+        message={
+          playerToDelete ? (
+            <span>
+              Are you sure you want to remove{" "}
+              <strong className="tw:text-slate-800">{playerToDelete.name}</strong> from your
+              roster?
+            </span>
+          ) : (
+            ""
+          )
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+    </>
+  );
+};
 
 const WishlistView: React.FC<{ players: Player[] }> = ({ players }) => {
   const dispatch = useAppDispatch();
@@ -384,7 +441,9 @@ const WishlistView: React.FC<{ players: Player[] }> = ({ players }) => {
       showAverages={false}
       title="Wishlist"
       icon="Star"
-      onRemovePlayer={(id) => dispatch(toggleWishlist(id))}
+      onRemovePlayer={(player) => dispatch(toggleWishlist(player.id))}
+      removeButtonTitle="Remove from Wishlist"
+      removeIconType="close"
     />
   );
 };
